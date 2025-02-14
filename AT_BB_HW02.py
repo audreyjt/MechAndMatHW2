@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 from datetime import datetime
+import pandas as pd
+
+# CSV file to df
+df = pd.read_csv("Expanded_Engineering_Materials_Properties.csv")
 
 # For naming files
 date_time = datetime.now()
-
-# constants
-aluminum_sigma_U = 38  # ksi
-steel_sigma_U = 70  # ksi
 
 # Minimum safety factor, may be altered by user
 safety_factor = 3
@@ -18,21 +18,45 @@ member_dict = {
         # Note: From testing AC may not be larger than approximately half ABCD, due to the geometry of the assembly
         # Note: ABCD is in a diamond shape wrapped about AC, pulled at the top and bottom at points B and D
         "ABCD": 60,  # [in]
-        "AC": 24     # [in]
+        "AC": 24,    # [in]
+        "EB": 36,    # [in]
+        "FD": 36,    # [in]
     },
     # Diameter of the cross-section of each member, may be altered by user
     "diameter": {
-        "ABCD": 3 / 8,  # [in]
+        "ABCD": 3/8,  # [in]
         "AC":   1,      # [in]
-        "EB":  1 / 2,   # [in]
-        "FD": 1 / 2     # [in]
+        "EB": 1/2,   # [in]
+        "FD": 1/2     # [in]
     },
-    # Material dictionary, options are steel or aluminum, may be altered by user
+    # Material dictionary, options are in .csv file, may be altered by user
+    # WARNING: COPY AND PASTE THE NAME FROM THE CSV FILE OR IT MAY NOT BE FOUND BY THE CODE
     "material": {
-        "ABCD": "steel",
-        "AC": "aluminum",
-        "EB": "steel",
-        "FD": "steel"
+        "ABCD": "Stainless 304",
+        "AC": "6061-T6",
+        "EB": "Stainless 304",
+        "FD": "Stainless 304"
+    },
+    # In ksi, to be filled in by code
+    "yield_strength": {
+        "ABCD": 0,
+        "AC": 0,
+        "EB": 0,
+        "FD": 0
+    },
+    # In lbs, to be filled in by code
+    "weight": {
+        "ABCD": 0,
+        "AC": 0,
+        "EB": 0,
+        "FD": 0
+    },
+    # In USD, to be filled in by code
+    "cost": {
+        "ABCD": 0,
+        "AC": 0,
+        "EB": 0,
+        "FD": 0
     },
     # Plotting points dictionary, to be filled in by code
     "points": {
@@ -90,17 +114,25 @@ frac_x_F_AC = ABCD_height / half_length
 member_dict["fraction"]["ABCD"] = frac_x_F_AB
 member_dict["fraction"]["AC"] = frac_x_F_AC
 
+
 # Calculate the maximum load (Q_u) able to sustained by member
 for member in member_dict["max_Q_load"]:
-    member_material = member_dict["material"][member]
-    if member_material == "steel":
-        u_strength = steel_sigma_U
-    else:
-        u_strength = aluminum_sigma_U
     member_diameter = member_dict["diameter"][member]
     member_csa = 3.1415926536 * (member_diameter**2) / 4
-    member_dict["max_force"][member] = u_strength * member_csa
-    member_dict["max_Q_load"][member] = member_dict["fraction"][member] * u_strength * member_csa
+    member_volume = member_dict["length"][member] * member_csa
+
+    # Ungodly df accessing
+    member_density = df.loc[df["Material"] == member_dict["material"][member]]["Density (lb/in³)"].values[0]
+    cost_p_lb = df.loc[df["Material"] == member_dict["material"][member]]["Cost per lb ($)"].values[0]
+    member_u_strength = df.loc[df["Material"] == member_dict["material"][member]]["Yield Strength (ksi)"].values[0]
+
+    member_weight = member_volume * member_density
+
+    member_dict['weight'][member] = member_weight
+    member_dict['cost'][member] = member_weight * cost_p_lb
+    member_dict['yield_strength'][member] = member_u_strength
+    member_dict["max_force"][member] = member_u_strength * member_csa
+    member_dict["max_Q_load"][member] = member_dict["fraction"][member] * member_u_strength * member_csa
 
 # Identifying the member that will fail first and calculating the allowable load
 lowest_strength = min(member_dict["max_Q_load"].values())
@@ -131,10 +163,10 @@ for member in member_dict["points"].keys():
             cur_member_points.append([0, 0])
         case "EB":
             cur_member_points.append([half_length, half_length])
-            cur_member_points.append([ABCD_height, ABCD_height * 1.25])
+            cur_member_points.append([ABCD_height, member_dict["length"]["EB"]])
         case "FD":
             cur_member_points.append([half_length, half_length])
-            cur_member_points.append([-ABCD_height, -ABCD_height * 1.25])
+            cur_member_points.append([-ABCD_height, -member_dict["length"]["FD"]])
 
 # Plots
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
@@ -174,7 +206,6 @@ def save_run():
         for member in member_dict[prop]:
             cur_file.write(f"{member}: {member_dict[prop][member]}\n")
     cur_file.close()
-
 
 save_run()
 plt.show()

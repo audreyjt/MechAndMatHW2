@@ -1,0 +1,22 @@
+Material Type,Material,Modulus of Elasticity (Mpsi),Poisson's Ratio,Yield Strength (ksi),Strain to Failure (%),Density (lb/in³),Cost per lb ($)
+Steel Alloy,AISI 1045,29.0,0.29,45,15.0,0.284,0.5
+Steel Alloy,AISI 4140,29.7,0.28,60,12.0,0.284,0.8
+Steel Alloy,AISI 4340,29.0,0.29,70,11.0,0.283,1.2
+Steel Alloy,Stainless 304,28.0,0.3,30,45.0,0.29,2.0
+Steel Alloy,Stainless 316,28.0,0.3,30,40.0,0.29,2.5
+Aluminum Alloy,6061-T6,10.0,0.33,40,12.0,0.098,1.5
+Aluminum Alloy,7075-T6,10.4,0.33,73,11.0,0.101,2.5
+Aluminum Alloy,2024-T3,10.6,0.33,50,18.0,0.101,2.2
+Aluminum Alloy,5083-H116,10.2,0.34,35,14.0,0.096,2.0
+Aluminum Alloy,7050-T7451,10.3,0.33,63,10.0,0.102,3.0
+Titanium Alloy,Ti-6Al-4V,16.5,0.34,120,14.0,0.16,25.0
+Titanium Alloy,Grade 2 Titanium,14.5,0.34,50,20.0,0.163,15.0
+Titanium Alloy,Beta-C Titanium,17.0,0.35,140,10.0,0.175,30.0
+Thermoplastic,Nylon 6/6,0.4,0.39,8,100.0,0.041,3.0
+Thermoplastic,Polycarbonate,0.34,0.37,10,120.0,0.043,5.0
+Thermoplastic,PTFE (Teflon),0.08,0.45,3,300.0,0.032,10.0
+Thermoplastic,UHMWPE,0.1,0.42,4,250.0,0.034,8.0
+Thermoset,Epoxy,0.5,0.35,12,2.0,0.042,6.0
+Thermoset,Phenolic,0.6,0.3,8,1.0,0.045,4.0
+Thermoset,Polyester Resin,0.55,0.32,10,3.0,0.044,7.0
+Thermoset,Vinyl Ester Resin,0.52,0.31,9,2.5,0.046,6.5
